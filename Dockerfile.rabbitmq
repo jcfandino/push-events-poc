@@ -1,6 +1,10 @@
 FROM rabbitmq:3.8-management
 
-RUN rabbitmq-plugins enable rabbitmq_web_stomp
+# Set JWT config
+COPY advanced.config /etc/rabbitmq/advanced.config
+
+# Enable Stomp and JWT
+RUN rabbitmq-plugins enable rabbitmq_web_stomp rabbitmq_auth_backend_oauth2
 
 EXPOSE 5672
 EXPOSE 15672
