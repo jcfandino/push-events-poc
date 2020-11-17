@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+  <style>
+    #messages {
+      display:block;
+      width:100%;
+      height:200px;
+      overflow:scroll;
+    }
+    .username {
+      color: maroon;
+    }
+  </style>
+</head>
 <!-- Copied from: https://github.com/stomp-js/samples/blob/master/stompjs/chat/chat.html -->
 <body>
   <div>
-    <div id="messages"></div>
+    <div id="messages" class="messages"></div>
+    <input type="text" id="input"></input>
     <button name="submitmsg" id="submitmsg">Send</button>
   </div>
 
@@ -15,6 +29,7 @@
   
   <script type="application/javascript">
   $(function () {
+    const userId = "user" + Math.floor((Math.random() * 1000) + 1);
     let stompClient;
   
     $.get("http://localhost:8080/auth/token", function(token) {
@@ -48,14 +63,14 @@
         // Subscriptions should be done inside onConnect as those need to reinstated when the broker reconnects
         onConnect: function (frame) {
           // send something
-          //publishMessage("Hi!");
+          publishMessage("entered the chat");
 
           // The return object has a method called `unsubscribe`
           const subscription = stompClient.subscribe('/topic/messages', function (message) {
             console.log(message);
             const payload = JSON.parse(message.body);
             const msgDiv = $("<div>");
-            msgDiv.html('<span>' + payload.message + '</span>');
+            msgDiv.html('<span class="username">' + payload.userId + ': </span><span>' + payload.message + '</span>');
             $("#messages").append(msgDiv);
           });
         }
@@ -70,7 +85,9 @@
       stompClient.activate();
 
       $("#submitmsg").click(function () {
-        publishMessage("hola");
+        const message = $("#input").val();
+        publishMessage(message);
+        $("#input").val('');
       });
     }
 
@@ -81,7 +98,7 @@
         return false;
       }
       if (message.length > 0) {
-        const payload = { message: message };
+        const payload = { userId: userId, message: message };
         // You can additionally pass headers
         stompClient.publish({destination: '/topic/messages', body: JSON.stringify(payload)});
       }
