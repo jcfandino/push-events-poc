@@ -41,7 +41,7 @@ The oauth2 plugin needs to be configured using advanced.config:
 ## Auth server
 
 A spring-boot app that generates JWTs to authorize connections.
-This is an eample of a decoded token:
+This is an example of a decoded token:
 
 Header:
 
