@@ -1,8 +1,11 @@
+# Introduction
+
+
 # Instructions
 
 - Build rabbitmq docker image
 
-    docker build -f Dockerfile.rabbitmq . -t rabbitmq-stomp
+    docker build -f Dockerfile.rabbitmq . -t rabbitmq-stomp-jwt
 
 - Run rabbitmq and kafka
 
