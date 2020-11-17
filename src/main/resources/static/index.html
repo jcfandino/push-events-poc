@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Based on: https://github.com/stomp-js/samples/blob/master/stompjs/chat/chat.html -->
 <head>
   <style>
     #messages {
@@ -13,7 +14,6 @@
     }
   </style>
 </head>
-<!-- Copied from: https://github.com/stomp-js/samples/blob/master/stompjs/chat/chat.html -->
 <body>
   <div>
     <div id="messages" class="messages"></div>
@@ -26,26 +26,24 @@
 
   <!-- Include from CDN for better performance, alternatively you can locally copy as well -->
   <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.0.0/bundles/stomp.umd.min.js"></script>
-  
+
   <script type="application/javascript">
   $(function () {
     const userId = "user" + Math.floor((Math.random() * 1000) + 1);
     let stompClient;
-  
+
+    // Fetch the access token from the auth server
     $.get("http://localhost:8080/auth/token", function(token) {
       startConnection(token);
     });
 
     function startConnection(token) {
       const stompConfig = {
-        // Typically login, passcode and vhost
-        // Adjust these for your broker
+        // Connect to / vhost using token
         connectHeaders: {
           host: "/",
-          login: "token",
+          login: "token", // username is ignored
           passcode: token
-          //login: "guest",
-          //passcode: "guest"
         },
 
         // Broker URL, should start with ws:// or wss:// - adjust for your broker setup
@@ -67,7 +65,6 @@
 
           // The return object has a method called `unsubscribe`
           const subscription = stompClient.subscribe('/topic/messages', function (message) {
-            console.log(message);
             const payload = JSON.parse(message.body);
             const msgDiv = $("<div>");
             msgDiv.html('<span class="username">' + payload.userId + ': </span><span>' + payload.message + '</span>');
@@ -78,8 +75,6 @@
 
       // Create an instance
       stompClient = new StompJs.Client(stompConfig);
-
-      // You can set additional configuration here
 
       // Attempt to connect
       stompClient.activate();
